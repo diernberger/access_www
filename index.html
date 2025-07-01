@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Access</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #e20074;
+      font-family: 'MS Sans Serif', sans-serif;
+      color: black;
+      overflow: hidden;
+    }
+
+    .desktop {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .window {
+      position: absolute;
+      border: 2px solid black;
+      background: #c0c0c0;
+      box-shadow: 2px 2px black;
+      cursor: move;
+    }
+
+    .title-bar {
+      background: #000080;
+      color: white;
+      padding: 2px 5px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-bar .close {
+      background: red;
+      width: 16px;
+      height: 16px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .window-content {
+      padding: 10px;
+    }
+
+    .button {
+      background: #c0c0c0;
+      border: 2px outset white;
+      padding: 4px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .loading-bar {
+      background: white;
+      border: 2px inset #808080;
+      width: 100%;
+      height: 20px;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .progress {
+      background: blue;
+      height: 100%;
+      width: 0;
+      position: relative;
+    }
+
+    .percentage {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 12px;
+      top: 2px;
+    }
+
+    .loading-indicator {
+      width: 10px;
+      height: 10px;
+      background-color: #000080;
+      border-radius: 50%;
+      margin-left: auto;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+
+    .taskbar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      background: #c0c0c0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+      box-shadow: inset 0 1px white;
+      font-size: 14px;
+    }
+
+    .start-button {
+      background: #c0c0c0;
+      border: 2px outset white;
+      padding: 2px 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    a {
+      color: blue;
+    }
+
+    .desktop, button {
+      cursor: default;
+    }
+
+    .loading-cursor {
+      cursor: progress !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="desktop" id="desktop">
+    <div class="window" id="welcome-window" style="top: 30%; left: 35%; width: 300px;">
+      <div class="title-bar">
+        <span>Notification</span>
+      </div>
+      <div class="window-content">
+        <p>Access the World Wide Web</p>
+        <button class="button" onclick="startAccess()">Go</button>
+      </div>
+    </div>
+
+    <div class="window" id="loading-window" style="display: none; top: 35%; left: 37%; width: 300px;">
+      <div class="title-bar">
+        <span>Loading...</span>
+        <div class="loading-indicator"></div>
+      </div>
+      <div class="window-content">
+        <p>Connecting to server...</p>
+        <div class="loading-bar">
+          <div class="progress" id="progress-bar">
+            <div class="percentage" id="percentage-text">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="window" id="error-window" style="display: none; top: 40%; left: 34%; width: 420px;">
+      <div class="title-bar">
+        <span>Error</span>
+        <div class="close" onclick="document.getElementById('error-window').style.display='none'">X</div>
+      </div>
+      <div class="window-content">
+        <p><strong>Access Denied</strong></p>
+        <p>Only 27% of people in Least Developed Countries had access to the Internet in 2022. Without access to the World Wide Web, the quality and chances for broad and equal education decrease drastically.</p>
+        <p><strong>About SDG 9:</strong> Goal Nr. 9 of the Sustainable Development Goals of the UN tackles worldwide infrastructural inequalities and promotes sustainable and inclusive industrialization & innovation.</p>
+        <p>
+          <a href="https://www.itu.int/en/ITU-D/Statistics/Pages/stat/default.aspx" target="_blank">Source</a><br>
+          <a href="https://sdgs.un.org/goals/goal9" target="_blank">Learn about SDG 9</a><br>
+          <a href="https://www.apc.org/en" target="_blank">Take action</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="taskbar">
+      <div class="start-button" onclick="location.reload()">Start</div>
+      <div id="datetime" style="margin-left: auto; margin-right: 10px; min-width: 170px; text-align: right;"></div>
+    </div>
+  </div>
+
+  <script>
+    function startAccess() {
+      document.body.classList.add('loading-cursor');
+      document.getElementById('welcome-window').style.display = 'none';
+      document.getElementById('loading-window').style.display = 'block';
+
+      let progress = 0;
+      const progressBar = document.getElementById('progress-bar');
+      const percentageText = document.getElementById('percentage-text');
+
+      const interval = setInterval(() => {
+        progress += 1;
+        progressBar.style.width = progress + '%';
+        percentageText.textContent = progress + '%';
+
+        if (progress >= 27) {
+          clearInterval(interval);
+          setTimeout(() => {
+            document.body.classList.remove('loading-cursor');
+            document.getElementById('loading-window').style.display = 'none';
+            document.getElementById('error-window').style.display = 'block';
+          }, 10000);
+        }
+      }, 100);
+    }
+
+    function makeDraggable(el) {
+      let offsetX = 0, offsetY = 0, isDown = false;
+      const bar = el.querySelector('.title-bar');
+
+      bar.addEventListener('mousedown', function(e) {
+        isDown = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+        document.addEventListener('mousemove', move, true);
+      });
+
+      document.addEventListener('mouseup', function() {
+        isDown = false;
+        document.removeEventListener('mousemove', move, true);
+      });
+
+      function move(e) {
+        if (!isDown) return;
+        el.style.left = (e.clientX - offsetX) + 'px';
+        el.style.top = (e.clientY - offsetY) + 'px';
+      }
+    }
+
+    ['welcome-window', 'loading-window', 'error-window'].forEach(id => makeDraggable(document.getElementById(id)));
+
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      const dateString = now.toLocaleDateString();
+      document.getElementById('datetime').textContent = `${dateString} ${timeString}`;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
+</body>
+</html>
